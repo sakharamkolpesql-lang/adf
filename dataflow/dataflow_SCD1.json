@@ -1,0 +1,133 @@
+{
+	"name": "dataflow_SCD1",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "ds_stg_employees",
+						"type": "DatasetReference"
+					},
+					"name": "srcStaging"
+				},
+				{
+					"dataset": {
+						"referenceName": "ds_dim_employees",
+						"type": "DatasetReference"
+					},
+					"name": "srcDimExisting"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "ds_dim_employees",
+						"type": "DatasetReference"
+					},
+					"name": "sinkUpdate"
+				},
+				{
+					"dataset": {
+						"referenceName": "ds_dim_employees",
+						"type": "DatasetReference"
+					},
+					"name": "sinkInsert"
+				}
+			],
+			"transformations": [
+				{
+					"name": "tagUpdate"
+				},
+				{
+					"name": "checkExists"
+				},
+				{
+					"name": "checkNotExists"
+				},
+				{
+					"name": "tagInsert"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          employee_id as integer,",
+				"          employee_name as string,",
+				"          department as string,",
+				"          city as string,",
+				"          salary as decimal(10,2)",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> srcStaging",
+				"source(output(",
+				"          surrogate_key as integer,",
+				"          employee_id as integer,",
+				"          employee_name as string,",
+				"          department as string,",
+				"          city as string,",
+				"          salary as decimal(10,2),",
+				"          start_date as date,",
+				"          end_date as date,",
+				"          is_current as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> srcDimExisting",
+				"checkExists alterRow(updateIf(true())) ~> tagUpdate",
+				"srcStaging, srcDimExisting exists(srcStaging@employee_id == srcDimExisting@employee_id,",
+				"     negate:false,",
+				"     broadcast: 'auto')~> checkExists",
+				"srcStaging, srcDimExisting exists(srcStaging@employee_id == srcDimExisting@employee_id,",
+				"     negate:true,",
+				"     broadcast: 'auto')~> checkNotExists",
+				"checkNotExists alterRow(insertIf(true())) ~> tagInsert",
+				"tagUpdate sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          surrogate_key as integer,",
+				"          employee_id as integer,",
+				"          employee_name as string,",
+				"          department as string,",
+				"          city as string,",
+				"          salary as decimal(10,2),",
+				"          start_date as date,",
+				"          end_date as date,",
+				"          is_current as string",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:false,",
+				"     updateable:true,",
+				"     upsertable:false,",
+				"     keys:['employee_id'],",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError') ~> sinkUpdate",
+				"tagInsert sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          surrogate_key as integer,",
+				"          employee_id as integer,",
+				"          employee_name as string,",
+				"          department as string,",
+				"          city as string,",
+				"          salary as decimal(10,2),",
+				"          start_date as date,",
+				"          end_date as date,",
+				"          is_current as string",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError') ~> sinkInsert"
+			]
+		}
+	}
+}

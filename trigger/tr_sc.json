@@ -1,0 +1,24 @@
+{
+	"name": "tr_sc",
+	"properties": {
+		"annotations": [],
+		"runtimeState": "Stopped",
+		"pipelines": [
+			{
+				"pipelineReference": {
+					"referenceName": "pl_HTTP_download",
+					"type": "PipelineReference"
+				}
+			}
+		],
+		"type": "ScheduleTrigger",
+		"typeProperties": {
+			"recurrence": {
+				"frequency": "Minute",
+				"interval": 10,
+				"startTime": "2026-09-19T10:46:00",
+				"timeZone": "India Standard Time"
+			}
+		}
+	}
+}

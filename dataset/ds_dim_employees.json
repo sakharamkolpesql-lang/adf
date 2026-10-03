@@ -1,0 +1,58 @@
+{
+	"name": "ds_dim_employees",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureSqlDatabase1",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "surrogate_key",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "employee_id",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "employee_name",
+				"type": "varchar"
+			},
+			{
+				"name": "department",
+				"type": "varchar"
+			},
+			{
+				"name": "city",
+				"type": "varchar"
+			},
+			{
+				"name": "salary",
+				"type": "decimal",
+				"precision": 10,
+				"scale": 2
+			},
+			{
+				"name": "start_date",
+				"type": "date"
+			},
+			{
+				"name": "end_date",
+				"type": "date"
+			},
+			{
+				"name": "is_current",
+				"type": "char"
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "dim_employees"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

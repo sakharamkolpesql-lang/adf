@@ -1,0 +1,15 @@
+{
+	"name": "labAz2026",
+	"properties": {
+		"trustModeClaimForMi": {
+			"value": "Disabled",
+			"editable": true
+		}
+	},
+	"location": "centralindia",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "bbec04c2-7a2f-464c-9db7-2143c4c0a7b2",
+		"tenantId": "2003f24d-e40c-4a41-9ed2-8e64afadba80"
+	}
+}
